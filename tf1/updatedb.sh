@@ -1,0 +1,1 @@
+./TechChallengeApp updatedb -s

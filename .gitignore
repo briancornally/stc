@@ -22,3 +22,10 @@ dist/
 
 # Output Binary
 TechChallengeApp
+*/env.sh
+*/.terraform
+*/terraform.tfstate*
+*/tfplan
+*/terraform*.log
+*/.terraform.lock.hcl
+*/.terraform.tfstate.lock.info

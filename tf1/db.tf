@@ -2,45 +2,71 @@
 # RESOURCES
 #############################################################################
 
-resource "azurerm_resource_group" "tdb" {
-  name     = "${var.prefix}-db"
+resource "azurerm_resource_group" "rgdb" {
+  name     = "${var.environment}-${var.suffix}-db"
+  location = var.location
 }
 
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_virtual_network_rule
+# https://registry.terraform.io/modules/Azure/postgresql/azurerm/latest
 module "postgresql" {
   source = "Azure/postgresql/azurerm"
 
-  resource_group_name = azurerm_resource_group.tdb.name
-  location            = azurerm_resource_group.tdb.location
+  resource_group_name = azurerm_resource_group.rgdb.name
+  location            = azurerm_resource_group.rgdb.location
 
-  server_name                  = "${azurerm_resource_group.tdb.name}-${random_integer.rand.result}"
+  server_name                  = "${azurerm_resource_group.rgdb.name}-${random_integer.rand.result}"
   sku_name                     = "GP_Gen5_2"
   storage_mb                   = 5120
   backup_retention_days        = 7
-  geo_redundant_backup_enabled = false
-  administrator_login          = "login"
-  administrator_password       = var.DbPassword
+  geo_redundant_backup_enabled = true
+  administrator_login          = var.dblogin
+  administrator_password       = var.dbpassword
   server_version               = "9.6"
-  ssl_enforcement_enabled      = true
-  db_names                     = ["db1", "db2", "db3"]
+  ssl_enforcement_enabled      = false
+  db_names                     = var.dbnames
   db_charset                   = "UTF8"
   db_collation                 = "English_United States.1252"
 
-  # firewall_rule_prefix = "firewall-"
-  # firewall_rules = [
-  #   { name = "test1", start_ip = "10.0.0.5", end_ip = "10.0.0.8" },
-  #   { start_ip = "127.0.0.0", end_ip = "127.0.1.0" },
-  # ]
+  # postgresql_configurations = {
+  #   backslash_quote = "on",
+  # }
 
-#   vnet_rule_name_prefix = "postgresql-vnet-rule-"
-#   vnet_rules = [
-#     { name = "subnet1", subnet_id = "<subnet_id>" }
-#   ]
+  vnet_rule_name_prefix = "postgresql-vnet-rule-"
+  vnet_rules = [
+    { name = var.subnet_names[0], subnet_id = azurerm_subnet.subnet0.id }
+  ]
 
   tags = local.common_tags
 
-  postgresql_configurations = {
-    backslash_quote = "on",
-  }
-
-  # depends_on = [azurerm_resource_group.tdb]
+  depends_on = [azurerm_resource_group.rgdb]
 }
+
+output "dbname" {
+  value = module.postgresql.server_name
+}
+
+############################################################################
+# PROVISIONERS
+############################################################################
+
+resource "null_resource" "db_seed" {
+
+  depends_on = [module.postgresql]
+
+  provisioner "local-exec" {
+    on_failure = continue
+    command = <<EOT
+myip=$(dig +short myip.opendns.com @resolver1.opendns.com)
+az postgres server firewall-rule create -g ${azurerm_resource_group.rgdb.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme --start-ip-address $myip --end-ip-address $myip
+echo "./TechChallengeApp updatedb -s" > updatedb.sh
+docker volume create myvolume
+docker run -d --name dummy -v myvolume:/root/updatedb.sh alpine tail -f /dev/null
+docker cp -a updatedb.sh dummy:/root/updatedb.sh
+docker rm -f dummy
+docker run --rm -p 3000:3000 -e VTT_DBUSER=${var.dblogin}@${module.postgresql.server_name} -e VTT_DBPASSWORD='${var.dbpassword}' -e VTT_DBNAME=${local.dbname} -e VTT_DBPORT=5432 -e VTT_DBHOST=${module.postgresql.server_name}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 -v myvolume:/root --entrypoint /bin/sh servian/techchallengeapp:latest -c /root/updatedb.sh
+az postgres server firewall-rule delete --yes -g ${azurerm_resource_group.rgdb.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme
+EOT
+  }
+}
+

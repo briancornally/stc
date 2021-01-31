@@ -2,23 +2,19 @@
 # VARIABLES
 #############################################################################
 
-variable "resource_group_name" {
+variable "suffix" {
   type = string
+  default = "tc"
 }
 
 variable "location" {
   type    = string
-  default = "ap-southeast-1"
+  default = "southeastasia"
 }
 
 variable "environment" {
   type    = string
   default = "dev"
-}
-
-variable "prefix" {
-  type    = string
-  default = "tc"
 }
 
 variable "costcenter" {
@@ -41,10 +37,60 @@ variable "subnet_names" {
   default = ["int", "db"]
 }
 
+variable "dbnames" {
+  type    = list(string)
+  default = ["db1","db2","db3"]
+}
+
+variable "dbpassword" {
+  type    = string
+}
+
+variable "dblogin" {
+  type    = string
+  default = "login"
+}
+
+variable "dbversion" {
+  type    = string
+  default = "9.6"
+}
+
+variable "appimg" {
+  type    = string
+  default = "DOCKER|servian/techchallengeapp:latest"
+}
+
+variable "appcmd" {
+  type    = string
+  default = "serve"
+}
+
+variable "apptimeout" {
+  type    = string
+  default = "60"
+}
+
+variable "subnet0delegationName" {
+  type    = string
+  default = "Microsoft.Web/serverFarms"
+}
+
+variable "subnet0delegationActions" {
+  type    = list(string)
+  default = ["Microsoft.Network/virtualNetworks/subnets/action"]
+}
+
+variable "subnet0serviceEndpoints" {
+  type = list(string)
+  default = ["Microsoft.Sql"]
+}
+
 locals {
   common_tags = {
     environment = var.environment
     costcenter = var.costcenter
   }
+  dbname= var.dbnames[0]
 }
 
