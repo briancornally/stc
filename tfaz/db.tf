@@ -7,8 +7,9 @@ resource "azurerm_resource_group" "rgdb" {
   location = var.location
 }
 
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_virtual_network_rule
+
 # https://registry.terraform.io/modules/Azure/postgresql/azurerm/latest
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_virtual_network_rule
 module "postgresql" {
   source = "Azure/postgresql/azurerm"
 
@@ -28,9 +29,9 @@ module "postgresql" {
   db_charset                   = "UTF8"
   db_collation                 = "English_United States.1252"
 
-  # postgresql_configurations = {
-  #   backslash_quote = "on",
-  # }
+  postgresql_configurations = {
+    backslash_quote = "on",
+  }
 
   vnet_rule_name_prefix = "postgresql-vnet-rule-"
   vnet_rules = [
@@ -56,7 +57,7 @@ resource "null_resource" "db_seed" {
 
   provisioner "local-exec" {
     on_failure = continue
-    command = <<EOT
+    command    = <<EOT
 myip=$(dig +short myip.opendns.com @resolver1.opendns.com)
 az postgres server firewall-rule create -g ${azurerm_resource_group.rgdb.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme --start-ip-address $myip --end-ip-address $myip
 echo "./TechChallengeApp updatedb -s" > updatedb.sh
