@@ -3,8 +3,8 @@
 #############################################################################
 
 variable "suffix" {
-  type = string
-  default = "tc"
+  type    = string
+  default = "app1"
 }
 
 variable "location" {
@@ -39,11 +39,11 @@ variable "subnet_names" {
 
 variable "dbnames" {
   type    = list(string)
-  default = ["db1","db2","db3"]
+  default = ["db1", "db2", "db3"]
 }
 
 variable "dbpassword" {
-  type    = string
+  type = string
 }
 
 variable "dblogin" {
@@ -68,7 +68,7 @@ variable "appcmd" {
 
 variable "apptimeout" {
   type    = string
-  default = "60"
+  default = "120"
 }
 
 variable "subnet0delegationName" {
@@ -82,15 +82,25 @@ variable "subnet0delegationActions" {
 }
 
 variable "subnet0serviceEndpoints" {
-  type = list(string)
+  type    = list(string)
   default = ["Microsoft.Sql"]
 }
 
 locals {
   common_tags = {
     environment = var.environment
-    costcenter = var.costcenter
+    costcenter  = var.costcenter
   }
-  dbname= var.dbnames[0]
+  dbname = var.dbnames[0]
+
+  app1name = "${var.environment}-app1-${random_integer.rand.result}"
+  apprg = "${var.environment}-${var.suffix}-app"
+  aspname = "${var.environment}-asp"
+  dbrg = "${var.environment}-${var.suffix}-db"
+  dbservername = "${azurerm_resource_group.db.name}-${random_integer.rand.result}"
+  kvname = "${var.environment}-${var.suffix}-kv"
+  kvrg="${var.environment}-${var.suffix}-kv"
+  netrg = "${var.environment}-${var.suffix}-net"
+  netname = "${var.environment}-${var.suffix}-net"
 }
 

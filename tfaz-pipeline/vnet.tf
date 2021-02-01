@@ -4,16 +4,16 @@
 # RESOURCES
 #############################################################################
 
-resource "azurerm_resource_group" "rgnet" {
-  name     = "${var.environment}-${var.suffix}-net"
+resource "azurerm_resource_group" "net" {
+  name     = local.netrg
   location = var.location
 }
 
 resource "azurerm_virtual_network" "tapp" {
-  name                = "${var.environment}-${var.suffix}-net"
+  name                = local.netname
   address_space       = var.vnet_cidr_range
-  location            = azurerm_resource_group.rgnet.location
-  resource_group_name = azurerm_resource_group.rgnet.name
+  location            = azurerm_resource_group.net.location
+  resource_group_name = azurerm_resource_group.net.name
 
   tags = local.common_tags
 }
@@ -22,7 +22,7 @@ resource "azurerm_virtual_network" "tapp" {
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet
 resource "azurerm_subnet" "subnet0" {
   name                 = var.subnet_names[0]
-  resource_group_name  = azurerm_resource_group.rgnet.name
+  resource_group_name  = azurerm_resource_group.net.name
   virtual_network_name = azurerm_virtual_network.tapp.name
   address_prefixes     = [var.subnet_prefixes[0]]
 

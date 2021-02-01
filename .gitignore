@@ -29,3 +29,4 @@ TechChallengeApp
 */terraform*.log
 */.terraform.lock.hcl
 */.terraform.tfstate.lock.info
+*/backend-config.txt

@@ -1,14 +1,14 @@
 
-resource "azurerm_resource_group" "rgapp" {
-  name     = "${var.environment}-${var.suffix}-app"
+resource "azurerm_resource_group" "app" {
+  name     = local.apprg
   location = var.location
 }
 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_virtual_network_swift_connection
 resource "azurerm_app_service_plan" "asp" {
-  name                = "${var.environment}-asp"
-  location            = azurerm_resource_group.rgapp.location
-  resource_group_name = azurerm_resource_group.rgapp.name
+  name                = local.aspname
+  location            = azurerm_resource_group.app.location
+  resource_group_name = azurerm_resource_group.app.name
   kind                = "Linux"
   reserved            = true
 
@@ -21,14 +21,18 @@ resource "azurerm_app_service_plan" "asp" {
 }
 
 resource "azurerm_app_service" "app1" {
-  name                = "${var.environment}-app1-${random_integer.rand.result}"
-  location            = azurerm_resource_group.rgapp.location
-  resource_group_name = azurerm_resource_group.rgapp.name
+  name                = local.app1name
+  location            = azurerm_resource_group.app.location
+  resource_group_name = azurerm_resource_group.app.name
   app_service_plan_id = azurerm_app_service_plan.asp.id
 
   site_config {
     app_command_line = var.appcmd
     linux_fx_version = var.appimg
+  }
+
+  identity {
+    type = "SystemAssigned"
   }
 
   app_settings = {
@@ -53,8 +57,8 @@ resource "azurerm_app_service_virtual_network_swift_connection" "app1" {
 
 resource "azurerm_monitor_autoscale_setting" "app1" {
   name                = azurerm_app_service_plan.asp.name
-  resource_group_name = azurerm_resource_group.rgapp.name
-  location            = azurerm_resource_group.rgapp.location
+  resource_group_name = azurerm_resource_group.app.name
+  location            = azurerm_resource_group.app.location
   target_resource_id  = azurerm_app_service_plan.asp.id
 
   profile {
@@ -125,5 +129,6 @@ EOT
   }
 }
 
-
-
+output "principal_id" {
+  value = azurerm_app_service.app1.identity.0.principal_id
+}

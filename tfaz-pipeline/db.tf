@@ -2,8 +2,8 @@
 # RESOURCES
 #############################################################################
 
-resource "azurerm_resource_group" "rgdb" {
-  name     = "${var.environment}-${var.suffix}-db"
+resource "azurerm_resource_group" "db" {
+  name     = local.dbrg
   location = var.location
 }
 
@@ -13,10 +13,10 @@ resource "azurerm_resource_group" "rgdb" {
 module "postgresql" {
   source = "Azure/postgresql/azurerm"
 
-  resource_group_name = azurerm_resource_group.rgdb.name
-  location            = azurerm_resource_group.rgdb.location
+  resource_group_name = azurerm_resource_group.db.name
+  location            = azurerm_resource_group.db.location
 
-  server_name                  = "${azurerm_resource_group.rgdb.name}-${random_integer.rand.result}"
+  server_name                  = local.dbservername
   sku_name                     = "GP_Gen5_2"
   storage_mb                   = 5120
   backup_retention_days        = 7
@@ -40,11 +40,7 @@ module "postgresql" {
 
   tags = local.common_tags
 
-  depends_on = [azurerm_resource_group.rgdb]
-}
-
-output "dbname" {
-  value = module.postgresql.server_name
+  depends_on = [azurerm_resource_group.db]
 }
 
 ############################################################################
@@ -59,15 +55,18 @@ resource "null_resource" "db_seed" {
     on_failure = continue
     command    = <<EOT
 myip=$(dig +short myip.opendns.com @resolver1.opendns.com)
-az postgres server firewall-rule create -g ${azurerm_resource_group.rgdb.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme --start-ip-address $myip --end-ip-address $myip
+az postgres server firewall-rule create -g ${azurerm_resource_group.db.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme --start-ip-address $myip --end-ip-address $myip
 echo "./TechChallengeApp updatedb -s" > updatedb.sh
 docker volume create myvolume
 docker run -d --name dummy -v myvolume:/root/updatedb.sh alpine tail -f /dev/null
 docker cp -a updatedb.sh dummy:/root/updatedb.sh
 docker rm -f dummy
 docker run --rm -p 3000:3000 -e VTT_DBUSER=${var.dblogin}@${module.postgresql.server_name} -e VTT_DBPASSWORD='${var.dbpassword}' -e VTT_DBNAME=${local.dbname} -e VTT_DBPORT=5432 -e VTT_DBHOST=${module.postgresql.server_name}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 -v myvolume:/root --entrypoint /bin/sh servian/techchallengeapp:latest -c /root/updatedb.sh
-az postgres server firewall-rule delete --yes -g ${azurerm_resource_group.rgdb.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme
+az postgres server firewall-rule delete --yes -g ${azurerm_resource_group.db.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme
 EOT
   }
 }
 
+output "dbname" {
+  value = module.postgresql.server_name
+}
