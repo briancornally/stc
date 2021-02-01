@@ -93,7 +93,7 @@ variable "appskusize" {
 
 variable "appskutier" {
   type = string
-  default = "S1"
+  default = "Standard"
 }
 
 locals {
@@ -104,11 +104,12 @@ locals {
   }
   dbname = var.dbnames[0]
 
-  app1name     = "${terraform.workspace}-app1-${random_integer.rand.result}"
+  # app1name     = "${terraform.workspace}-${var.suffix}-${random_integer.rand.result}"
+  app1name     = "${var.suffix}-${random_integer.rand.result}"
   apprg        = "${terraform.workspace}-${var.suffix}-app"
   aspname      = "${terraform.workspace}-${var.suffix}-asp"
   dbrg         = "${terraform.workspace}-${var.suffix}-db"
-  dbservername = "${azurerm_resource_group.db.name}-${random_integer.rand.result}"
+  dbservername = "${terraform.workspace}-${var.suffix}-${random_integer.rand.result}"
   kvname       = "${terraform.workspace}-${var.suffix}-kv"
   kvrg         = "${terraform.workspace}-${var.suffix}-kv"
   netname      = "${terraform.workspace}-${var.suffix}-net"

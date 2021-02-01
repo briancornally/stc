@@ -70,3 +70,7 @@ EOT
 output "dbname" {
   value = module.postgresql.server_name
 }
+
+output "dbuser" {
+  value = "${var.dblogin}@${module.postgresql.server_name}"
+}

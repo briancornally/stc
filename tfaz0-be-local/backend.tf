@@ -1,3 +1,5 @@
+# Deploy terraform backend on azure storage
+# credit for this file & method to https://github.com/ned1313/Implementing-Terraform-on-Microsoft-Azure
 ##################################################################################
 # RESOURCES
 ##################################################################################
@@ -60,7 +62,7 @@ data "azurerm_storage_account_sas" "state" {
 # PROVISIONERS
 #############################################################################
 
-resource "null_resource" "post-config" {
+resource "null_resource" "tfbe" {
 
   depends_on = [azurerm_storage_container.ct]
 

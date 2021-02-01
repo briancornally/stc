@@ -4,17 +4,9 @@ data "azurerm_key_vault" "kv" {
   resource_group_name = local.kvname
 }
 
-output "vault_uri" {
-  value = data.azurerm_key_vault.kv.vault_uri
-}
-
 data "azurerm_key_vault_secret" "kv_dbpassword" {
   name         = "dbpassword"
   key_vault_id = data.azurerm_key_vault.kv.id
-}
-
-output "kv_dbpassword_id" {
-  value = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.kv_dbpassword.id})"
 }
 
 resource "azurerm_key_vault_access_policy" "app1" {
@@ -27,4 +19,8 @@ resource "azurerm_key_vault_access_policy" "app1" {
   ]
 
   depends_on = [azurerm_app_service.app1]
+}
+
+output "kv_dbpassword_id" {
+  value = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.kv_dbpassword.id})"
 }

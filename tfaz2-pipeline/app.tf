@@ -129,6 +129,6 @@ EOT
   }
 }
 
-output "principal_id" {
-  value = azurerm_app_service.app1.identity.0.principal_id
+output "default_site_hostname" {
+  value = "http://${azurerm_app_service.app1.default_site_hostname}"
 }
