@@ -4,7 +4,7 @@
 
 variable "suffix" {
   type    = string
-  default = "tf"
+  default = "app1"
 }
 
 variable "location" {
@@ -12,14 +12,14 @@ variable "location" {
   default = "southeastasia"
 }
 
-variable "environment" {
-  type    = string
-  default = "dev"
-}
-
 variable "costcenter" {
   type    = string
   default = "IT"
+}
+
+variable "environment" {
+  type    = string
+  default = "tf"
 }
 
 locals {
@@ -27,6 +27,6 @@ locals {
     environment = var.environment
     costcenter  = var.costcenter
   }
-  saname = "${lower(var.suffix)}${random_integer.sa_num.result}"
-  sarg   = "all-${var.suffix}-be"
+  saname = "tf${lower(var.suffix)}${random_integer.sa_num.result}"
+  sarg   = "tf-${var.suffix}-be"
 }

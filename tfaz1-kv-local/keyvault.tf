@@ -9,7 +9,7 @@ resource "azurerm_resource_group" "kv" {
 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
 resource "azurerm_key_vault" "kv" {
-  name                        = "${var.environment}-${var.suffix}-kv"
+  name                        = local.kvname
   location                    = azurerm_resource_group.kv.location
   resource_group_name         = azurerm_resource_group.kv.name
   enabled_for_disk_encryption = false
@@ -26,7 +26,8 @@ resource "azurerm_key_vault" "kv" {
     secret_permissions = [
       "set",
       "get",
-      "list"
+      "list",
+      "delete"
     ]
   }
 }

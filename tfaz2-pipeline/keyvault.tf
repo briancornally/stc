@@ -14,7 +14,7 @@ data "azurerm_key_vault_secret" "kv_dbpassword" {
 }
 
 output "kv_dbpassword_id" {
-  value = data.azurerm_key_vault_secret.kv_dbpassword.id
+  value = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.kv_dbpassword.id})"
 }
 
 resource "azurerm_key_vault_access_policy" "app1" {

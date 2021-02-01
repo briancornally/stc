@@ -12,10 +12,10 @@ variable "location" {
   default = "southeastasia"
 }
 
-variable "environment" {
-  type    = string
-  default = "dev"
-}
+# variable "environment" {
+#   type    = string
+#   default = "dev"
+# }
 
 variable "costcenter" {
   type    = string
@@ -34,12 +34,27 @@ variable "subnet_prefixes" {
 
 variable "subnet_names" {
   type    = list(string)
-  default = ["int", "db"]
+  default = ["int", "vm"]
+}
+
+variable "subnet0delegationName" {
+  type    = string
+  default = "Microsoft.Web/serverFarms"
+}
+
+variable "subnet0delegationActions" {
+  type    = list(string)
+  default = ["Microsoft.Network/virtualNetworks/subnets/action"]
+}
+
+variable "subnet0serviceEndpoints" {
+  type    = list(string)
+  default = ["Microsoft.Sql"]
 }
 
 variable "dbnames" {
   type    = list(string)
-  default = ["db1", "db2", "db3"]
+  default = ["app1", "app2", "app3"]
 }
 
 variable "dbpassword" {
@@ -71,36 +86,32 @@ variable "apptimeout" {
   default = "120"
 }
 
-variable "subnet0delegationName" {
-  type    = string
-  default = "Microsoft.Web/serverFarms"
+variable "appskusize" {
+  type = string
+  default = "S1"
 }
 
-variable "subnet0delegationActions" {
-  type    = list(string)
-  default = ["Microsoft.Network/virtualNetworks/subnets/action"]
-}
-
-variable "subnet0serviceEndpoints" {
-  type    = list(string)
-  default = ["Microsoft.Sql"]
+variable "appskutier" {
+  type = string
+  default = "S1"
 }
 
 locals {
+  environment = terraform.workspace
   common_tags = {
-    environment = var.environment
+    environment = terraform.workspace
     costcenter  = var.costcenter
   }
   dbname = var.dbnames[0]
 
-  app1name = "${var.environment}-app1-${random_integer.rand.result}"
-  apprg = "${var.environment}-${var.suffix}-app"
-  aspname = "${var.environment}-asp"
-  dbrg = "${var.environment}-${var.suffix}-db"
+  app1name     = "${terraform.workspace}-app1-${random_integer.rand.result}"
+  apprg        = "${terraform.workspace}-${var.suffix}-app"
+  aspname      = "${terraform.workspace}-${var.suffix}-asp"
+  dbrg         = "${terraform.workspace}-${var.suffix}-db"
   dbservername = "${azurerm_resource_group.db.name}-${random_integer.rand.result}"
-  kvname = "${var.environment}-${var.suffix}-kv"
-  kvrg="${var.environment}-${var.suffix}-kv"
-  netrg = "${var.environment}-${var.suffix}-net"
-  netname = "${var.environment}-${var.suffix}-net"
+  kvname       = "${terraform.workspace}-${var.suffix}-kv"
+  kvrg         = "${terraform.workspace}-${var.suffix}-kv"
+  netname      = "${terraform.workspace}-${var.suffix}-net"
+  netrg        = "${terraform.workspace}-${var.suffix}-net"
 }
 

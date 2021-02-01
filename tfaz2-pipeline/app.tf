@@ -13,8 +13,8 @@ resource "azurerm_app_service_plan" "asp" {
   reserved            = true
 
   sku {
-    tier = "Standard"
-    size = "S1"
+    tier = var.appskutier
+    size = var.appskusize
   }
 
   tags = local.common_tags
@@ -39,7 +39,7 @@ resource "azurerm_app_service" "app1" {
     "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io"
     "VTT_DBHOST"                          = "${module.postgresql.server_name}.postgres.database.azure.com"
     "VTT_DBNAME"                          = local.dbname
-    "VTT_DBPASSWORD"                      = var.dbpassword
+    "VTT_DBPASSWORD"                      = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.kv_dbpassword.id})"
     "VTT_DBPORT"                          = "5432"
     "VTT_DBUSER"                          = "${var.dblogin}@${module.postgresql.server_name}"
     "VTT_LISTENHOST"                      = "0.0.0.0"

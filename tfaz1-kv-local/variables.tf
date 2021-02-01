@@ -12,11 +12,6 @@ variable "location" {
   default = "southeastasia"
 }
 
-variable "environment" {
-  type    = string
-  default = "dev"
-}
-
 variable "costcenter" {
   type    = string
   default = "IT"
@@ -27,11 +22,12 @@ variable "dbpassword" {
 }
 
 locals {
+  environment = terraform.workspace
   common_tags = {
-    environment = var.environment
+    environment = terraform.workspace
     costcenter  = var.costcenter
   }
-  kvname = "${var.environment}-${var.suffix}-kv"
-  kvrg="${var.environment}-${var.suffix}-kv"
+  kvname = "${terraform.workspace}-${var.suffix}-kv"
+  kvrg="${terraform.workspace}-${var.suffix}-kv"
 }
 
