@@ -22,6 +22,8 @@ dist/
 
 # Output Binary
 TechChallengeApp
+
+# terraform intermediate files
 */.terraform
 */terraform.tfstate*
 */tfplan
@@ -29,3 +31,4 @@ TechChallengeApp
 */.terraform.lock.hcl
 */.terraform.tfstate.lock.info
 */backend-config.txt
+*/*.log

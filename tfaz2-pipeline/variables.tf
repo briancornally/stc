@@ -34,7 +34,7 @@ variable "subnet_prefixes" {
 
 variable "subnet_names" {
   type    = list(string)
-  default = ["int", "vm"]
+  default = ["int"]
 }
 
 variable "subnet0delegationName" {
@@ -57,9 +57,9 @@ variable "dbnames" {
   default = ["app1", "app2", "app3"]
 }
 
-variable "dbpassword" {
-  type = string
-}
+# variable "dbpassword" {
+#   type = string
+# }
 
 variable "dblogin" {
   type    = string
@@ -94,6 +94,11 @@ variable "appskusize" {
 variable "appskutier" {
   type = string
   default = "Standard"
+}
+
+variable "app_health_check_path" {
+  type = string
+  default = "/healthcheck/"
 }
 
 locals {

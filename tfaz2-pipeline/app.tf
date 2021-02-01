@@ -20,6 +20,7 @@ resource "azurerm_app_service_plan" "asp" {
   tags = local.common_tags
 }
 
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service
 resource "azurerm_app_service" "app1" {
   name                = local.app1name
   location            = azurerm_resource_group.app.location
@@ -29,6 +30,7 @@ resource "azurerm_app_service" "app1" {
   site_config {
     app_command_line = var.appcmd
     linux_fx_version = var.appimg
+    health_check_path = var.app_health_check_path
   }
 
   identity {
