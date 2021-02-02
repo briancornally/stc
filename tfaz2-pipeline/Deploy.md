@@ -1,11 +1,15 @@
 
 # Deploy Solution Features
-- deploys to an empty cloud subscription with no existing infrastructure in place
-- start from a cloned git repo
-- pre-requisites documented in the following section
-- deploy code contained within this GitHub repository
-- deploys via terraform automated process
-- entirely infrastructure as code
+- Deploys to an empty cloud subscription with no existing infrastructure in place
+- Start from a cloned git repo
+- Pre-requisites documented in the following section
+- Deploy code contained within this GitHub repository
+- Fully automated deploy with terraform
+- Entirely infrastructure as code
+- Auto scaling and highly available frontend natively with Azure App Service
+- Highly available Database natively with Azure Database for PostgreSQL
+- Secret stored in Azure Key Vault
+- App connects with Database through private network
 
 # Pre requisites for your deployment solution
 - terraform init -backend-config=backend-config.txt
@@ -48,7 +52,7 @@ terraform apply tfplan
 - Run from local as dbpasswd begins as a local system terraform (environment) variable. 
 - Sample workspace values: dev|accp|prod. optional as if unspecified will be "default"
 - Possible future developments: 
-    - Pipeline random password and stores password in new keyvault
+    - Pipeline creates random password and stores password in new keyvault
 - Commands: 
 
 ```bash
@@ -59,8 +63,9 @@ terraform plan -out tfplan
 terraform apply tfplan
 ```
 ## 3. Deploy solution 
-- Can be invoked from local or pipeline. 
-- Shares state through terraform backend on azure storage. 
+- Can be invoked from local or pipeline. Do NOT run local & pipeline concurrently or state will lock. To unlock:
+  - terraform force-unlock LOCKID
+- terraform state backend on azure storage. 
 - Sample workspace values: "dev|accp|prod". Where unspecified will be "default". 
 - Commands: 
 ```bash
