@@ -24,3 +24,19 @@ echo $objectId
 az keyvault set-policy --name dev-tc-kv --object-id $objectId --secret-permissions get
 keyvaultid=$(az keyvault secret show --name dbpassword --vault-name dev-tc-kv --query id -o tsv)
 echo "@Microsoft.KeyVault(SecretUri=$keyvaultid)"
+
+rgname=dev-app1-db
+dbservername=dev-app1-33421
+dbname=app1
+dbservernameurl=$dbservername.postgres.database.azure.com
+dblogin=login@$dbservername
+
+myip=$(dig +short myip.opendns.com @resolver1.opendns.com)
+az postgres server firewall-rule create -g ${rgname} -s ${dbservername} -n updatedbIpDeleteme --start-ip-address $myip --end-ip-address $myip
+echo "./TechChallengeApp updatedb -s" > updatedb.sh
+docker volume create myvolume
+docker run -d --name dummy -v myvolume:/root/updatedb.sh alpine tail -f /dev/null
+docker cp -a updatedb.sh dummy:/root/updatedb.sh
+docker rm -f dummy
+docker run --rm -p 3000:3000 -e VTT_DBUSER=${dblogin} -e VTT_DBPASSWORD=$VTT_DBPASSWORD -e VTT_DBNAME=$dbname -e VTT_DBPORT=5432 -e VTT_DBHOST=${dbservername}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 -v myvolume:/root --entrypoint /bin/ash servian/techchallengeapp:latest -c /root/updatedb.sh
+az postgres server firewall-rule delete --yes -g ${rgname} -s ${dbservername} -n updatedbIpDeleteme

@@ -61,6 +61,8 @@ docker volume create myvolume
 docker run -d --name dummy -v myvolume:/root/updatedb.sh alpine tail -f /dev/null
 docker cp -a updatedb.sh dummy:/root/updatedb.sh
 docker rm -f dummy
+echo docker run --rm -p 3000:3000 -e VTT_DBUSER=${var.dblogin}@${module.postgresql.server_name} -e VTT_DBPASSWORD=PASSWORD -e VTT_DBNAME=${local.dbname} -e VTT_DBPORT=5432 -e VTT_DBHOST=${module.postgresql.server_name}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 -v myvolume:/root --entrypoint /bin/ash servian/techchallengeapp:latest -c /root/updatedb.sh
+az postgres server firewall-rule delete --yes -g ${azurerm_resource_group.db.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme
 docker run --rm -p 3000:3000 -e VTT_DBUSER=${var.dblogin}@${module.postgresql.server_name} -e VTT_DBPASSWORD='${var.dbpassword}' -e VTT_DBNAME=${local.dbname} -e VTT_DBPORT=5432 -e VTT_DBHOST=${module.postgresql.server_name}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 -v myvolume:/root --entrypoint /bin/ash servian/techchallengeapp:latest -c /root/updatedb.sh
 az postgres server firewall-rule delete --yes -g ${azurerm_resource_group.db.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme
 EOT
