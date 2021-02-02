@@ -21,17 +21,3 @@ resource "azurerm_key_vault_access_policy" "app1" {
   depends_on = [azurerm_app_service.app1]
 }
 
-resource "azurerm_key_vault_access_policy" "azdevopssp" {
-  key_vault_id = data.azurerm_key_vault.kv.id
-  tenant_id    = var.azdevopstenant
-  object_id    = var.azdevopssp
-
-  secret_permissions = [
-    "get",
-    "list"
-  ]
-
-}
-output "kv_dbpassword_id" {
-  value = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.kv_dbpassword.id})"
-}

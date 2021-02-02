@@ -61,16 +61,6 @@ variable "dbpassword" {
   type = string
 }
 
-variable "azdevopssp" {
-  type = string
-  default = "c7ebe7b1-6756-4623-aebe-fa1e61d010ee"
-}
-
-variable "azdevopstenant" {
-  type = string
-  default = "d5170891-80d3-48d7-b234-133c0715d5d9"
-}
-
 variable "dblogin" {
   type    = string
   default = "login"

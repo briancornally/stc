@@ -38,3 +38,15 @@ resource "azurerm_key_vault_secret" "kvdbpassword" {
   value        = var.dbpassword
   key_vault_id = azurerm_key_vault.kv.id
 }
+
+resource "azurerm_key_vault_access_policy" "azdevopssp" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id    = var.azdevopstenant
+  object_id    = var.azdevopssp
+
+  secret_permissions = [
+    "get",
+    "list"
+  ]
+
+}
