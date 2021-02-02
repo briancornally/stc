@@ -57,9 +57,9 @@ variable "dbnames" {
   default = ["app1", "app2", "app3"]
 }
 
-# variable "dbpassword" {
-#   type = string
-# }
+variable "dbpassword" {
+  type = string
+}
 
 variable "dblogin" {
   type    = string
