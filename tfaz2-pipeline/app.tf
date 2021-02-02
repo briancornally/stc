@@ -126,7 +126,13 @@ resource "null_resource" "app_warmup" {
   provisioner "local-exec" {
     on_failure = continue
     command    = <<EOT
-curl --max-time ${var.apptimeout} ${azurerm_app_service.app1.default_site_hostname}
+if --max-time ${var.apptimeout} ${azurerm_app_service.app1.default_site_hostname} > HTML_Output
+then echo "Request was successful"
+cat HTML_Output
+else 
+echo "CURL Failed"
+exit 1
+fi
 EOT
   }
 }
