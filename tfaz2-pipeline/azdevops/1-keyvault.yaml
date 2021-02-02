@@ -1,0 +1,8 @@
+steps:
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: dev-app1-kv'
+  inputs:
+    azureSubscription: 'nw (c568096a-90af-455c-91d0-31314d3fbbf5)'
+    KeyVaultName: 'dev-app1-kv'
+    SecretsFilter: dbpassword
+    RunAsPreJob: true

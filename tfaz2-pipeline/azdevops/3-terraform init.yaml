@@ -1,0 +1,15 @@
+steps:
+- task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+  displayName: 'terraform init'
+  inputs:
+    command: init
+    workingDirectory: '$(System.DefaultWorkingDirectory)/stc/tfaz2-pipeline'
+    backendType: azurerm
+    backendServiceArm: 'nw (c568096a-90af-455c-91d0-31314d3fbbf5)'
+    ensureBackend: true
+    backendAzureRmResourceGroupName: 'tf-app1-be'
+    backendAzureRmResourceGroupLocation: southeastasia
+    backendAzureRmStorageAccountName: tfapp158870
+    backendAzureRmStorageAccountSku: 'Standard_LRS'
+    backendAzureRmContainerName: 'terraform-state'
+    backendAzureRmKey: terraform.tfstate

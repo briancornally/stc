@@ -1,0 +1,19 @@
+#Your build pipeline references an undefined variable named ‘dbpassword’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+
+steps:
+- task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+  displayName: 'terraform apply'
+  inputs:
+    command: apply
+    workingDirectory: '$(System.DefaultWorkingDirectory)/stc/tfaz2-pipeline'
+    environmentServiceName: 'nw (c568096a-90af-455c-91d0-31314d3fbbf5)'
+    commandOptions: '-var dbpassword=$(dbpassword)'
+    backendServiceArm: 'nw (c568096a-90af-455c-91d0-31314d3fbbf5)'
+    ensureBackend: true
+    backendAzureRmResourceGroupName: 'tf-app1-be'
+    backendAzureRmResourceGroupLocation: southeastasia
+    backendAzureRmStorageAccountName: tfapp158870
+    backendAzureRmStorageAccountSku: 'Standard_LRS'
+    backendAzureRmContainerName: 'terraform-state'
+    backendAzureRmKey: terraform.tfstate
+    allowTelemetryCollection: false

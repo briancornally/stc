@@ -1,0 +1,10 @@
+variables:
+  EnvironmentName: 'dev'
+
+steps:
+- task: Bash@3
+  displayName: Workspace
+  inputs:
+    targetType: filePath
+    filePath: './$(System.DefaultWorkingDirectory)/stc/tfaz2-pipeline/workspacetest.sh'
+    arguments: '$(EnvironmentName)'
