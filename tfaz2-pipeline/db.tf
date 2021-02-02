@@ -22,7 +22,7 @@ module "postgresql" {
   backup_retention_days        = 7
   geo_redundant_backup_enabled = true
   administrator_login          = var.dblogin
-  administrator_password       = var.dbpassword
+  administrator_password       = data.azurerm_key_vault_secret.kv_dbpassword.value
   server_version               = "9.6"
   ssl_enforcement_enabled      = false
   db_names                     = var.dbnames
@@ -61,7 +61,7 @@ docker volume create myvolume
 docker run -d --name dummy -v myvolume:/root/updatedb.sh alpine tail -f /dev/null
 docker cp -a updatedb.sh dummy:/root/updatedb.sh
 docker rm -f dummy
-docker run --rm -p 3000:3000 -e VTT_DBUSER=${var.dblogin}@${module.postgresql.server_name} -e VTT_DBPASSWORD='${var.dbpassword}' -e VTT_DBNAME=${local.dbname} -e VTT_DBPORT=5432 -e VTT_DBHOST=${module.postgresql.server_name}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 -v myvolume:/root --entrypoint /bin/sh servian/techchallengeapp:latest -c /root/updatedb.sh
+docker run --rm -p 3000:3000 -e VTT_DBUSER=${var.dblogin}@${module.postgresql.server_name} -e VTT_DBPASSWORD='${data.azurerm_key_vault_secret.kv_dbpassword.value}' -e VTT_DBNAME=${local.dbname} -e VTT_DBPORT=5432 -e VTT_DBHOST=${module.postgresql.server_name}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 -v myvolume:/root --entrypoint /bin/sh servian/techchallengeapp:latest -c /root/updatedb.sh
 az postgres server firewall-rule delete --yes -g ${azurerm_resource_group.db.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme
 EOT
   }
