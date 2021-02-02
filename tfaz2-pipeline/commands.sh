@@ -40,3 +40,7 @@ docker cp -a updatedb.sh dummy:/root/updatedb.sh
 docker rm -f dummy
 docker run --rm -p 3000:3000 -e VTT_DBUSER=${dblogin} -e VTT_DBPASSWORD=$VTT_DBPASSWORD -e VTT_DBNAME=$dbname -e VTT_DBPORT=5432 -e VTT_DBHOST=${dbservername}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 -v myvolume:/root --entrypoint /bin/ash servian/techchallengeapp:latest -c /root/updatedb.sh
 az postgres server firewall-rule delete --yes -g ${rgname} -s ${dbservername} -n updatedbIpDeleteme
+
+terraform taint null_resource.db_seed
+
+docker run --rm -p 3000:3000 -e VTT_DBUSER=login@dev-app1-33421 -e VTT_DBPASSWORD=$VTT_DBPASSWORD -e VTT_DBNAME=app1 -e VTT_DBPORT=5432 -e VTT_DBHOST=dev-app1-33421.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 -v myvolume:/root --entrypoint /bin/ash servian/techchallengeapp:latest -c /root/updatedb.sh
