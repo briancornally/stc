@@ -27,11 +27,12 @@
 Deploy is in three parts. 
 
 - Deploy terraform backend on azure storage
-  - directory: tfaz0-be-local
+  - directory: tfaz0-be-local - Terraform files
 - Deploy keyvault and populate with dbpasswd
-  - directory: tfaz1-kv-local
+  - directory: tfaz1-kv-local - Terraform files
 - Deploy solution 
-  - directory: tfaz2-pipeline
+  - directory: tfaz2-pipeline - Terraform files and this document
+  - directory: tfaz2-pipeline/azdevops - Azure DevOps Release Pipeline Yaml
 
 # Process instructions for provisioning
 ## 1. Deploy terraform backend on azure storage
@@ -77,7 +78,7 @@ terraform plan -out tfplan
 terraform apply tfplan
 ```
 
-- Sample Output:
+- CLI Sample Output:
 
 ```bash
 dbname = "default-app1-70078"
@@ -85,6 +86,8 @@ dbuser = "login@default-app1-70078"
 default_site_hostname = "http://app1-70078.azurewebsites.net"
 kv_dbpassword_id = "@Microsoft.KeyVault(SecretUri=https://default-app1-kv.vault.azure.net/secrets/dbpassword/1f9476b9a9ab4eba8f87e14af8907bb3)"
 ```
+Azure DevOps Screenshot
+
 
 # Architecture
 
