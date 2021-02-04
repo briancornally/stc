@@ -52,11 +52,11 @@ resource "null_resource" "db_seed" {
   depends_on = [module.postgresql]
 
   provisioner "local-exec" {
-    on_failure = continue
+    on_failure = fail
     command    = <<EOT
 myip=$(dig +short myip.opendns.com @resolver1.opendns.com)
 az postgres server firewall-rule create -g ${azurerm_resource_group.db.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme --start-ip-address $myip --end-ip-address $myip
-postgresql.server_name}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 brian2nw/stc:latest
+docker run --rm -e VTT_DBUSER=${var.dblogin}@${module.postgresql.server_name} -e VTT_DBPASSWORD='${var.dbpassword}' -e VTT_DBNAME=${local.dbname} -e VTT_DBPORT=5432 -e VTT_DBHOST=${module.postgresql.server_name}.postgres.database.azure.com -e VTT_LISTENHOST=0.0.0.0 -e VTT_LISTENPORT=3000 brian2nw/stc:latest
 az postgres server firewall-rule delete --yes -g ${azurerm_resource_group.db.name} -s ${module.postgresql.server_name} -n updatedbIpDeleteme
 EOT
   }
