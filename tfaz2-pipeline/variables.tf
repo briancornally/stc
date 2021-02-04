@@ -54,7 +54,7 @@ variable "dbnames" {
 
 variable "dbpassword" {
   type      = string
-  # sensitive = true
+  sensitive = true
 }
 
 variable "dblogin" {
