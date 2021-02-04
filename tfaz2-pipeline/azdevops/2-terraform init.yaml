@@ -1,6 +1,6 @@
 steps:
 - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
-  displayName: 'terraform init'
+  displayName: 'terraform init cli'
   inputs:
     command: init
     workingDirectory: '$(System.DefaultWorkingDirectory)/stc/tfaz2-pipeline'

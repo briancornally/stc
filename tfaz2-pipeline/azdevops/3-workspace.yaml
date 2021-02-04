@@ -8,3 +8,4 @@ steps:
     targetType: filePath
     filePath: './$(System.DefaultWorkingDirectory)/stc/tfaz2-pipeline/workspacetest.sh'
     arguments: '$(EnvironmentName)'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/stc/tfaz2-pipeline'
