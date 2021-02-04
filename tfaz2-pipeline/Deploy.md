@@ -87,7 +87,12 @@ default_site_hostname = "http://app1-70078.azurewebsites.net"
 kv_dbpassword_id = "@Microsoft.KeyVault(SecretUri=https://default-app1-kv.vault.azure.net/secrets/dbpassword/1f9476b9a9ab4eba8f87e14af8907bb3)"
 ```
 Azure DevOps Screenshot
+![Drag Racing](azdevops.jpg)
 
+
+Notes
+- Azure DevOps started to fail db.tf null_resource.db_seed for --entrypoint on servian/techchallengeapp. This was needed for "updatedb -s". Workaround is to publish the following container to brian2nw/stc
+ENTRYPOINT [ "./TechChallengeApp","updatedb","-s"]
 
 # Architecture
 
