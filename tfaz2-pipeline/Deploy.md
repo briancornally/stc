@@ -89,11 +89,6 @@ kv_dbpassword_id = "@Microsoft.KeyVault(SecretUri=https://default-app1-kv.vault.
 Azure DevOps Screenshot
 ![Drag Racing](azdevops.jpg)
 
-
-Notes
-- Azure DevOps started to fail db.tf null_resource.db_seed for --entrypoint on servian/techchallengeapp. This was needed for "updatedb -s". Workaround is to publish the following container to brian2nw/stc
-ENTRYPOINT [ "./TechChallengeApp","updatedb","-s"]
-
 # Architecture
 
 ## Terraform
@@ -125,13 +120,27 @@ ENTRYPOINT [ "./TechChallengeApp","updatedb","-s"]
   - https://docs.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases
 - Geo rudundant backup option chosen. 
 - Though marginally cheaper Azure Database for PostgreSQL Flexible Server was not chosen as requires Private Link and is in preview. Private Link would have increased complexity & incurred a usage cost. 
+  
   - General Purpose, HA, locally redundant, 2 availability zones, private access, D2s_v3, 2 vCores, 8 GiB RAM, 32 GiB storage  $229 / month
 - Possible future developments: 
+  
   - Update Go app to support SSL connection to database
 - Terraform local-exec post deploy step to popuate database 
-  - '-s' option required for Azure Database for PostgreSQL PaaS
-  - leverages script on volume as otherwise app did not parse cli correctly 
-  - ``` ./TechChallengeApp updatedb -s ```
+  - Updatedb '-s' option required for Azure Database for PostgreSQL PaaS
+
+    - ``` ./TechChallengeApp updatedb -s ``` 
+
+  - Created docker image for this purpose
+
+    - ```ENTRYPOINT [ "./TechChallengeApp","updatedb","-s"]```
+
+    - ```bash
+      docker login
+      docker build -t brian2nw/stc:latest .
+      docker push brian2nw/stc:latest
+      ```
+
+  - Initial approach was to create a custom volume with relevant command see: file:db.tf.orig. Laterly --entrypoint began to fail only on AzureDevOps agent & changed to above approach. 
 
 ## App Service
 

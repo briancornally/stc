@@ -37,7 +37,11 @@ az postgres server firewall-rule delete --yes -g $rgname -s $dbservername -n upd
 
 
 ENTRYPOINT [ "./TechChallengeApp","updatedb","-s"]
+
+```
 docker login
 docker build -t brian2nw/stc:latest .
 docker push brian2nw/stc:latest
+```
+
 docker rm -f stc; docker run --name stc brian2nw/stc:latest
