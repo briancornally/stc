@@ -53,8 +53,8 @@ variable "dbnames" {
 }
 
 variable "dbpassword" {
-  type = string
-  sensitive   = true
+  type      = string
+  # sensitive = true
 }
 
 variable "dblogin" {
@@ -83,17 +83,17 @@ variable "apptimeout" {
 }
 
 variable "appskusize" {
-  type = string
+  type    = string
   default = "S1"
 }
 
 variable "appskutier" {
-  type = string
+  type    = string
   default = "Standard"
 }
 
 variable "app_health_check_path" {
-  type = string
+  type    = string
   default = "/healthcheck/"
 }
 
