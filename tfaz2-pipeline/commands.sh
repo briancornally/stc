@@ -4,8 +4,9 @@ docker
 
 terraform taint null_resource.db_seed; tpa
 terraform taint null_resource.app_warmup; tpa
-terraform taint azurerm_app_service_plan.asp; tpa
+terraform taint azurerm_app_service_plan.asp; tpa 
 terraform taint azurerm_key_vault.kv; tpa
+
 
 ./TechChallengeApp updatedb -s
 ./TechChallengeApp serve

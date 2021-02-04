@@ -12,11 +12,6 @@ variable "location" {
   default = "southeastasia"
 }
 
-# variable "environment" {
-#   type    = string
-#   default = "dev"
-# }
-
 variable "costcenter" {
   type    = string
   default = "IT"
@@ -59,6 +54,7 @@ variable "dbnames" {
 
 variable "dbpassword" {
   type = string
+  sensitive   = true
 }
 
 variable "dblogin" {
