@@ -1,5 +1,6 @@
+# [Technical Challenge](readme.challenge.md)
 
-# Deploy Solution Features
+## Deploy Solution Features
 - Deploys to an empty cloud subscription with no existing infrastructure in place
 - Start from a cloned git repo
 - Pre-requisites documented in the following section
@@ -11,7 +12,7 @@
 - Secret stored in Azure Key Vault
 - App connects with Database through private network
 
-# Pre requisites for your deployment solution
+## Pre requisites for your deployment solution
 - terraform init -backend-config=backend-config.txt
 - as a security feature, keyvault soft delete is now enabled by default on azure. to remove keyvault use script: tfaz0-be-local/rm-kv.sh
     - https://docs.microsoft.com/en-us/azure/key-vault/general/soft-delete-change
@@ -22,7 +23,7 @@
 - expect azcli installed
     - https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
 
-# High level architectural overview of  deployment 
+## High level architectural overview of  deployment 
 
 Deploy is in three parts. 
 
@@ -34,7 +35,7 @@ Deploy is in three parts.
   - directory: tfaz2-pipeline - Terraform files and this document
   - directory: tfaz2-pipeline/azdevops - Azure DevOps Release Pipeline Yaml
 
-# Process instructions for provisioning
+## Process instructions for provisioning
 ## 1. Deploy terraform backend on azure storage
 - Run from local to output backend-config.txt for terraform backend init during stage 3. Deploy solution 
     - storage_account_name, container_name, key(file:terraform.tfstate), sas_token
@@ -49,7 +50,7 @@ terraform plan -out tfplan
 terraform apply tfplan
 ```
 
-## 2. Deploy keyvault and populate with dbpasswd
+### 2. Deploy keyvault and populate with dbpasswd
 - Run from local as dbpasswd begins as a local system terraform (environment) variable. 
 - Sample workspace values: dev|accp|prod. optional as if unspecified will be "default"
 - Possible future developments: 
@@ -63,7 +64,7 @@ terraform init
 terraform plan -out tfplan
 terraform apply tfplan
 ```
-## 3. Deploy solution 
+### 3. Deploy solution 
 - Can be invoked from local or pipeline. Do NOT run local & pipeline concurrently or state will lock. To unlock:
   - terraform force-unlock LOCKID
 - terraform state backend on azure storage. 
@@ -87,23 +88,23 @@ default_site_hostname = "http://app1-70078.azurewebsites.net"
 kv_dbpassword_id = "@Microsoft.KeyVault(SecretUri=https://default-app1-kv.vault.azure.net/secrets/dbpassword/1f9476b9a9ab4eba8f87e14af8907bb3)"
 ```
 Azure DevOps Screenshot
-![Drag Racing](azdevops.jpg)
+![Drag Racing](tfaz2-pipeline/azdevops.jpg)
 
-# Architecture
+## Architecture
 
-## Terraform
+### Terraform
 
 - Workspace feature for multiple environment
   - https://www.terraform.io/docs/language/state/workspaces.html
 - Functionality separated into separate files
   - app, backend, db, keyvault, providers, shared, variables, vnet
 
-## Secrets
+### Secrets
 
 - dbpassword is only secret in use. It is stored in Azure KeyVault. 
 - Azure App Service is provided minimal 'get' privileges only
 
-## Network
+### Network
 
 - For security App connects to Database through Azure VNET
 - Both App and Database connect to Int (Integration) subnet
@@ -112,7 +113,7 @@ Azure DevOps Screenshot
 - Possible future developments: 
   - Network Security Group rules to limit traffic. Not needed at the current time as only App and Database use VNET. 
 
-## Database
+### Database
 - Azure Database for PostgreSQL servers is natively Highly Available
 - SSL enforce status is disabled as App does not support it. 
 - Smallest General Purpose Tier Database size chosen. Basic Tier does not support required VNET service endpoint. 
@@ -142,7 +143,7 @@ Azure DevOps Screenshot
 
   - Initial approach was to create a custom volume with relevant command see: file:db.tf.orig. Laterly --entrypoint began to fail only on AzureDevOps agent & changed to above approach. 
 
-## App Service
+### App Service
 
 - Application run using pre-built container from dockerhub 
   - servian/techchallengeapp:latest
